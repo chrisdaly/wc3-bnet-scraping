@@ -4,15 +4,7 @@ import bnet_scraper
 
 
 def lambda_handler(event, context):
-    print('event ', event)
     params = event.get('queryStringParameters')
-    print('params ', params)
-    if not params:
-        return {
-            'statusCode': 200,
-            'body': 'No data provided.'
-        }
-
     server = params.get('server')
     player = params.get('player')
 

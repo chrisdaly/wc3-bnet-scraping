@@ -5,13 +5,11 @@ import requests
 def get_soup(player=None, server=None):
     url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?'
     params = {'Gateway': server, 'PlayerName': player}
-    print(params)
     try:
         r = requests.get(url, params=params)
         r.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(e)
-    print(r.url)
     soup = BeautifulSoup(r.content, 'lxml')
     return soup
 
@@ -24,7 +22,7 @@ def get_tables(soup):
         'individual': game_tables[1],
         'team': game_tables[2]
     }
-    # TODO: check for "Player Not Found!" in html.
+
     return tables
 
 
