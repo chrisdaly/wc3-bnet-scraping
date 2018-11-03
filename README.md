@@ -2,7 +2,8 @@
 Scrapes a player's profile and returns JSON. Utilized with AWS API Gateway as the Lambda function.
 
 ## Example
-https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&player=WEAREFOALS
+http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?Gateway=Northrend&PlayerName=ILoveNecropolis
+https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&player=ILoveNecropolis
 
 ```
 {
