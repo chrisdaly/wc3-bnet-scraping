@@ -86,11 +86,13 @@ https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&play
 ```
 
 
-## TODO
+## TODO Parsing
 - Scrape everything on the page.
 - Replace "rank": null with N/A.
 - Keep only numbers, let downstream format to string etc. Check what twitter does here.
+- Playername is losing capitalization somehow. The profile page uses the user input from the query params. You could possibly get it from the ladder page. More toruble than it's worth? It's also in the Full Game Listing section.
+
+## TODO API
 - More defined endpoints.
-- Start incorporating twitch bot.
 - (SQS?)
 - Figure out how to propogate errors from internal to response.
