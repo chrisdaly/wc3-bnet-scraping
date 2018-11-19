@@ -58,3 +58,10 @@ data_positions = {
         }
     }
 }
+
+emoji_dict = {
+    'Human': 'grubHU',
+    'Orc': 'grubORC',
+    'Night Elf': 'grubNE',
+    'Undead': 'grubUD'
+}

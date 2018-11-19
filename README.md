@@ -93,6 +93,7 @@ https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&play
 - Playername is losing capitalization somehow. The profile page uses the user input from the query params. You could possibly get it from the ladder page. More toruble than it's worth? It's also in the Full Game Listing section.
 - http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?Gateway=Northrend&PlayerName=slarkz causes error somehow
 - Extract colour e.g. Mutti, but they won't have a battle.net account
+- 
 
 ## TODO API
 - More defined endpoints.
@@ -100,4 +101,12 @@ https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&play
 - Figure out how to propogate errors from internal to response.
 - https://github.com/MatthieuSegret/sc2profile/blob/master/lib/sc2profile.rb
 - !info - plays Orc 90% of the time.
+- Load new lambda function, hook bot up to it (remove extra formatting)
+- Start mapping out more discrete API, use HUG? 
+  - /solo
+  - /rt
+  - /info
+  - /at?partner=KODOS_FORSAKEN
 - Reread the code for that 4s dashboard website
+- ML endpoint? W2V, Tod + Grubby = 4k
+ - Add Ladder scrape - Ladder Northrend 

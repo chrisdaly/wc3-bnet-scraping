@@ -1,0 +1,3 @@
+dateparser
+beautifulsoup4
+#pandas

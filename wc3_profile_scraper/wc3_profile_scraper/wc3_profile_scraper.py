@@ -1,10 +1,10 @@
 """Scrapes a WC3 profile page from battlenet and returns json."""
 from bs4 import BeautifulSoup
-import requests
-import re
+from botocore.vendored import requests
 import dateparser
 import pandas as pd
-from config import data_positions
+from config import data_positions, emoji_dict
+
 
 class Profile:
     def __init__(self, player, server):
@@ -25,8 +25,8 @@ class Profile:
         return BeautifulSoup(r.content, 'lxml')
 
     def _validate(self):
-        self.validate_server()
-        self.validate_player()
+            self.validate_server()
+            self.validate_player()
 
     def parse(self):
         data = {}
@@ -44,9 +44,9 @@ class Profile:
     @property
     def information(self):
         return {
-            'clan': self.clan,
             'player': self.player,
             'server': self.server,
+            'clan': self.clan,
             'main_race': self.main_race,
             'home_page': self.home_page,
             'additional_info': self.parse_additional_info,
@@ -120,20 +120,22 @@ class Profile:
     @property
     def last_ladder_game(self):
         soup = self.tables.get('info')
-        last_ladder_game = soup.find(text='Last Ladder Game:').parent.parent.b.get_text()
+        last_ladder_game = soup.find(text='Last Ladder Game:')
+        if last_ladder_game is not None:
+            last_ladder_game = last_ladder_game.parent.parent.b.get_text()
         last_ladder_game = str(dateparser.parse(last_ladder_game).date())
         return last_ladder_game
 
     @property
     def main_race(self):
         soup = self.tables.get('info')
-        overall_stats_table = soup.find('td', class_='rankingHeader').parent.parent
+        overall_stats_table = soup.find('td', class_='rankingHeader')
+        if overall_stats_table is not None:
+            overall_stats_table = overall_stats_table.parent.parent
         rows = overall_stats_table.find_all('tr')[1:-1]
         df = self.parse_stats_table(rows)
-        i = df['total_games'].idxmax()
-
         if len(df[df['percentage_games'] >= 75]) != 0:
-            main_race = df[df['percentage_games'] >= 75]['race'].values[0].title() 
+            main_race = df[df['percentage_games'] >= 75]['race'].values[0].title()
         else:
             main_race = 'No main race'
 
@@ -164,9 +166,10 @@ class Profile:
     @property
     def clan(self):
         soup = self.tables.get('info')
-        clan_url = soup.find(href=re.compile('ClanTag='))
+        clan_url = soup.find('a', href=lambda x: x and x.startswith('w3xp-clan-profile.aspx?'))
         if clan_url is not None:
             return clan_url.get_text()
+        return 'N/A'
 
     @staticmethod
     def format_values(type_, values):
@@ -225,64 +228,78 @@ class Profile:
 
     def request_solo(self):
         data = self.individual.get('solo')
-        if data is None:
-            return '{}@{} | {} | SOLO, N/A'.format(self.player, self.server, self.main_race)
-        data.update({
-            'main_race': self.main_race,
-            'player': self.player,
-            'server': self.server,
-        })
-        message = '{player}@{server} | {main_race} | SOLO, Level {level}, {rank}, {wins} Wins, {losses} Losses, {win_percentage}'
-        return message.format(**data)
+        if data is not None:
+            # return '{}@{} | {} | SOLO, N/A'.format(self.player, self.server, emoji_dict[self.main_race])
+            data.update({
+                'main_race': self.main_race,#emoji_dict[self.main_race],
+                'player': self.player,
+                'server': self.server,
+            })
+        # message = '{player}@{server} | {main_race} | SOLO, Level {level}, {rank}, {wins} Wins, {losses} Losses, {win_percentage}'
+        return data #message.format(**data)
 
     def request_random_team(self):
         data = self.individual.get('random_team')
-        if data is None:
-            return '{}@{} | {} | TEAM, N/A'.format(self.player, self.server, self.main_race)
-
-        data.update({
-            'main_race': self.main_race,
-            'player': self.player,
-            'server': self.server,
-        })
-        message = '{player}@{server} | {main_race} | RANDOM TEAM, Level {level}, {rank}, {wins} Wins, {losses} Losses, {win_percentage}'
-        return message.format(**data)
+        if data is not None:
+            data.update({
+                'main_race': self.main_race,
+                'player': self.player,
+                'server': self.server,
+            })
+        return data
 
     def request_info(self):
         data = self.information
-        if data is None:
-            return '{}@{} | {} | INFORMATION, N/A'.format(self.player, self.server, self.main_race)
-        message = '{player}@{server} | {main_race} | INFORMATION, Clan {clan}, Last ladder game {last_ladder_game}, {home_page}, {additional_info}'
-        return message.format(**data)
+        if data is not None:
+            return data
+            # return '{}@{} | {} | INFORMATION, N/A'.format(self.player, self.server, emoji_dict[self.main_race])
+        # message = '{player}@{server} | {main_race} | INFORMATION, Clan {clan}, Last ladder game {last_ladder_game}, {home_page}, {additional_info}'
+        # return message.format(**data)
+
 
 if __name__ == '__main__':
-    # players = [
-    #     {
-    #         'player': 'romantichuman',
-    #         'server': 'northrend'
-    #     },
-    #     {
-    #         'player': 'wearefoals',
-    #         'server': 'northrend'
-    #     },
-    #     {
-    #         'player': 'wearefoals',
-    #         'server': 'azeroth'
-    #     },
-    # ]
-    # for player in players:
-    #     profile = Profile(**player)
-    #     print(profile.request_solo())
-    #     print(profile.request_random_team())
-    #     print(profile.request_info())
-    #     print()
+    players = [
+        {
+            'player': 'romantichuman',
+            'server': 'northrend'
+        },
+        {
+            'player': 'pieck',
+            'server': 'northrend'
+        },
+        {
+            'player': 'pieck',
+            'server': 'azeroth'
+        },
+        {
+            'player': 'wearefoals',
+            'server': 'northrend'
+        },
+        {
+            'player': 'wearefoals',
+            'server': 'azeroth'
+        },
+        {
+            'player': 'wearefoals',
+            'server': 'fake_server'
+        },
+        {
+            'player': 'fake_player',
+            'server': 'azeroth'
+        },
+        {
+            'player': 'moon1234',
+            'server': 'northrend'
+        },
+    ]
 
-    event = {'resource': '/', 'path': '/', 'httpMethod': 'GET', 'headers': {'accept': 'application/json', 'Host': 'bqeat6w63f.execute-api.us-east-1.amazonaws.com', 'X-Amzn-Trace-Id': 'Root=1-5bee09ca-65f4c47d59fc60984c0a93eb', 'X-Forwarded-For': '18.212.29.137', 'X-Forwarded-Port': '443', 'X-Forwarded-Proto': 'https'}, 'multiValueHeaders': {'accept': ['application/json'], 'Host': ['bqeat6w63f.execute-api.us-east-1.amazonaws.com'], 'X-Amzn-Trace-Id': ['Root=1-5bee09ca-65f4c47d59fc60984c0a93eb'], 'X-Forwarded-For': ['18.212.29.137'], 'X-Forwarded-Port': ['443'], 'X-Forwarded-Proto': ['https']}, 'queryStringParameters': {'player': 'wearefoals', 'server': 'northrend'}, 'multiValueQueryStringParameters': {'player': ['boys-fuk-me'], 'server': ['nort2hrend']}, 'pathParameters': None, 'stageVariables': None, 'requestContext': {'resourceId': 'mdicp3cstd', 'resourcePath': '/', 'httpMethod': 'GET', 'extendedRequestId': 'QbZ3mHoyoAMFmCw=', 'requestTime': '16/Nov/2018:00:05:30 +0000', 'path': '/dev', 'accountId': '153852854695', 'protocol': 'HTTP/1.1', 'stage': 'dev', 'domainPrefix': 'bqeat6w63f', 'requestTimeEpoch': 1542326730241, 'requestId': '5457479a-e933-11e8-b1bd-7b60b897e033', 'identity': {'cognitoIdentityPoolId': None, 'accountId': None, 'cognitoIdentityId': None, 'caller': None, 'sourceIp': '18.212.29.137', 'accessKey': None, 'cognitoAuthenticationType': None, 'cognitoAuthenticationProvider': None, 'userArn': None, 'userAgent': None, 'user': None}, 'domainName': 'bqeat6w63f.execute-api.us-east-1.amazonaws.com', 'apiId': 'bqeat6w63f'}, 'body': None, 'isBase64Encoded': False}
-    params = event.get('queryStringParameters')
-    profile = Profile(**params)
-    print(profile.request_solo())
-    # validate_server(server)
-    # soup = get_soup(player, server)
-    # validate_player(player, soup)
-    # data = parse_data(soup)
-    # print(data)
+    for player in players:
+        print()
+        try:
+            profile = Profile(**player)
+            print(profile.parse())
+            # print(profile.request_solo())
+            # print(profile.request_random_team())
+            # print(profile.request_info())
+        except Exception as e:
+            print(e)
