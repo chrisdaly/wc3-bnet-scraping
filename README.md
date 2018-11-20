@@ -110,3 +110,10 @@ https://bqeat6w63f.execute-api.us-east-1.amazonaws.com/dev?server=northrend&play
 - Reread the code for that 4s dashboard website
 - ML endpoint? W2V, Tod + Grubby = 4k
  - Add Ladder scrape - Ladder Northrend 
+ - WHen grubby does /stats you could read and replicate it
+ - Abilities information
+ - /user/stats
+ - /user/information
+ - /user/history
+ - /ladder
+ - /statistics/

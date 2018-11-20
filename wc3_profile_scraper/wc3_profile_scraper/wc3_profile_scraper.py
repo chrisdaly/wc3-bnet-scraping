@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from botocore.vendored import requests
 import dateparser
 import pandas as pd
-from config import data_positions, emoji_dict
+from config import data_positions
 
 
 class Profile:
@@ -12,9 +12,13 @@ class Profile:
         self.server = server.title()
         self.params = {'PlayerName': self.player, 'Gateway': self.server}
         self.url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?'
+        self.servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
         self.soup = self.get_soup()
         self._validate()
         self.tables = self._parse_tables()
+
+    def __str__(self):
+        return '{}@{}'.format(self.player, self.server)
 
     def get_soup(self):
         try:
@@ -25,8 +29,8 @@ class Profile:
         return BeautifulSoup(r.content, 'lxml')
 
     def _validate(self):
-            self.validate_server()
-            self.validate_player()
+        self.validate_server()
+        self.validate_player()
 
     def parse(self):
         data = {}
@@ -210,7 +214,6 @@ class Profile:
                 if len(partners) > 1:
                     partners.remove('')
                 values.append(partners)
-
             else:
                 values.append(value.get_text())
 
@@ -219,24 +222,21 @@ class Profile:
     def validate_player(self):
         error_span = self.soup.find('span', class_='colorRed')
         if error_span is not None:
-            raise Exception('{}@{} | Profile not found'.format(self.player, self.server))
+            raise Exception('{} | Profile not found'.format(str(self)))
 
     def validate_server(self):
-        servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
-        if self.server.lower() not in servers:
-            raise Exception('{}@{} | Invalid server'.format(self.player, self.server))
+        if self.server.lower() not in self.servers:
+            raise Exception('{} | Invalid server'.format(str(self)))
 
     def request_solo(self):
         data = self.individual.get('solo')
         if data is not None:
-            # return '{}@{} | {} | SOLO, N/A'.format(self.player, self.server, emoji_dict[self.main_race])
             data.update({
-                'main_race': self.main_race,#emoji_dict[self.main_race],
+                'main_race': self.main_race,
                 'player': self.player,
                 'server': self.server,
             })
-        # message = '{player}@{server} | {main_race} | SOLO, Level {level}, {rank}, {wins} Wins, {losses} Losses, {win_percentage}'
-        return data #message.format(**data)
+        return data
 
     def request_random_team(self):
         data = self.individual.get('random_team')
@@ -252,10 +252,6 @@ class Profile:
         data = self.information
         if data is not None:
             return data
-            # return '{}@{} | {} | INFORMATION, N/A'.format(self.player, self.server, emoji_dict[self.main_race])
-        # message = '{player}@{server} | {main_race} | INFORMATION, Clan {clan}, Last ladder game {last_ladder_game}, {home_page}, {additional_info}'
-        # return message.format(**data)
-
 
 if __name__ == '__main__':
     players = [
@@ -292,14 +288,12 @@ if __name__ == '__main__':
             'server': 'northrend'
         },
     ]
-
+    print('-- Testing --')
     for player in players:
         print()
         try:
             profile = Profile(**player)
+            print(profile)
             print(profile.parse())
-            # print(profile.request_solo())
-            # print(profile.request_random_team())
-            # print(profile.request_info())
         except Exception as e:
             print(e)
