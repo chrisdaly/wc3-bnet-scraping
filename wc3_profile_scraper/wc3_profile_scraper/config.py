@@ -1,4 +1,6 @@
-data_positions = {
+import dateparser
+
+data_positions_profile = {
     'teams':
     {
         'wins':
@@ -56,6 +58,38 @@ data_positions = {
             'position': 2,
             'function': lambda x: int(x.replace(',', ''))
         }
+    }
+}
+
+
+data_positions_history = {
+    'date': {
+        'position': 1,
+        'function': lambda x: str(dateparser.parse(x).strftime("%Y-%m-%d %H:%M:%S"))
+    },
+    'game_type': {
+        'position': 2,
+        'function': lambda x: x.strip()
+    },
+    'map': {
+        'position': 3,
+        'function': lambda x: x.strip()
+    },
+    'team_one': {
+        'position': 6,
+        'function': lambda x: [] if x is '' else x.strip().split(',')
+    },
+    'team_two': {
+        'position': 8,
+        'function': lambda x: [] if x is '' else x.strip().split(',')
+    },
+    'game_length': {
+        'position': 9,
+        'function': lambda x: int(x.strip())
+    },
+    'winner': {
+        'position': 10,
+        'function': lambda x: x.strip()
     }
 }
 

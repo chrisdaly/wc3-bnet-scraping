@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from botocore.vendored import requests
 import dateparser
 import pandas as pd
-from config import data_positions
+from config import data_positions_profile
 
 
 class Profile:
@@ -181,7 +181,7 @@ class Profile:
         data = {}
 
         for field in fields:
-            meta_data = data_positions[type_][field]
+            meta_data = data_positions_profile[type_][field]
             if not meta_data:
                 continue
             i = meta_data['position']
