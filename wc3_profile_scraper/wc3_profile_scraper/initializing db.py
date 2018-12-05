@@ -39,7 +39,7 @@ def divide_into_batches(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-bigquery_credpath = os.path.abspath('./BigQuery Reader Project-88493810ca62.json')
+bigquery_credpath = os.path.abspath('/Users/cdaly/Box Sync/Daly, Christopher/Keys/BigQuery Reader Project-88493810ca62.json')
 client = bigquery.Client.from_service_account_json(bigquery_credpath)
 job_config = bigquery.LoadJobConfig()
 job_config.skip_leading_rows = 1
