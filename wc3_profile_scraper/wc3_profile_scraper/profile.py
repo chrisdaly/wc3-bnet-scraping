@@ -219,14 +219,14 @@ class Profile:
 
         return values
 
+    def validate_server(self):
+        if self.server.lower() not in self.servers:
+            raise Exception('{} | Invalid server'.format(str(self)))
+
     def validate_player(self):
         error_span = self.soup.find('span', class_='colorRed')
         if error_span is not None:
             raise Exception('{} | Profile not found'.format(str(self)))
-
-    def validate_server(self):
-        if self.server.lower() not in self.servers:
-            raise Exception('{} | Invalid server'.format(str(self)))
 
     def request_solo(self):
         data = self.individual.get('solo')

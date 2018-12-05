@@ -1,0 +1,44 @@
+{
+    "fields": [
+        {
+            "name": "date",
+            "type": "DATETIME",
+            "mode": "NULLABLE"
+        },
+        {
+            "name": "game_length",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+        },
+        {
+            "name": "game_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+        },
+        {
+            "name": "game_id",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+        },
+        {
+            "name": "map",
+            "type": "STRING",
+            "mode": "NULLABLE"
+        },
+        {
+            "name": "team_one",
+            "type": "STRING",
+            "mode": "REPEATED"
+        },
+        {
+            "name": "team_two",
+            "type": "STRING",
+            "mode": "REPEATED"
+        },
+        {
+            "name": "winner",
+            "type": "STRING",
+            "mode": "REPEATED"
+        }
+    ]
+}

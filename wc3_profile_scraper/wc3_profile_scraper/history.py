@@ -4,6 +4,7 @@ from helpers import wash_player_name
 from config import data_positions_history
 from urllib.parse import parse_qs
 import pandas as pd
+import json
 
 
 class HistoryPage:
@@ -17,26 +18,24 @@ class HistoryPage:
         self.soup = self.get_soup()
         self._validate()
 
+    def __str__(self):
+        return '{}@{}'.format(self.player, self.server)
+
+    def __repr__(self):
+        return '{}@{}'.format(self.player, self.server)
 
     def _validate(self):
         self.validate_server()
         self.validate_player()
-
 
     def validate_player(self):
         error_span = self.soup.find('span', class_='colorRed')
         if error_span is not None:
             raise Exception('{} | Profile not found'.format(str(self)))
 
-
     def validate_server(self):
         if self.server.lower() not in self.servers:
             raise Exception('{} | Invalid server'.format(str(self)))
-
-
-    def __str__(self):
-        return '{}@{}'.format(self.player, self.server)
-
 
     def get_soup(self):
         try:
@@ -71,8 +70,8 @@ class Game:
         values = self.soup.find_all(['td'])
         values = [x.get_text().strip() for x in values]
         data = self.parse_values(values)
-        id_ = self.soup.find_all(['td'])[0].a.get('href').split('&GameID=')[1]
-        data['id'] = int(id_)
+        game_id = self.soup.find_all(['td'])[0].a.get('href').split('&GameID=')[1]
+        data['game_id'] = int(game_id)
         data['team_one'].append(self.player)
 
         for players in ['team_one', 'team_two']:
@@ -112,7 +111,7 @@ if __name__ == '__main__':
         data_all = []
 
         while True:
-                history_page = HistoryPage('followgrubby', 'northrend', page)
+                history_page = HistoryPage(player.get('player'), player.get('server'), page)
                 data = list(history_page.games())
                 data_all.extend(data)
                 next_page = history_page.next_page
@@ -120,6 +119,11 @@ if __name__ == '__main__':
                         break
                 page = next_page
 
-                df = pd.DataFrame(data_all)
+        df = pd.DataFrame(data_all)
         print(df.shape)
         print(df.head(3))
+
+    data = df.to_dict(orient='records')
+    print(data)
+    with open('./data_backfill/{}.json'.format(player.get('player')), 'w') as f:
+        json.dump(data, f)
