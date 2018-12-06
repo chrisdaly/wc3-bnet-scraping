@@ -1,36 +1,16 @@
 """Scrapes a WC3 profile page from battlenet and returns json."""
-from bs4 import BeautifulSoup
-from botocore.vendored import requests
 import dateparser
 import pandas as pd
 from config import data_positions_profile
+from bnet_page import BnetPage
 
 
-class ProfilePage:
+class ProfilePage(BnetPage):
     def __init__(self, player, server):
-        self.player = player
-        self.server = server.title()
-        self.params = {'PlayerName': self.player, 'Gateway': self.server}
         self.url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?'
-        self.servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
-        self.soup = self.get_soup()
-        self._validate()
+        print(self.url)
         self.tables = self._parse_tables()
-
-    def __str__(self):
-        return '{}@{}'.format(self.player, self.server)
-
-    def get_soup(self):
-        try:
-            r = requests.get(self.url, params=self.params, timeout=5)
-        except:
-            raise
-        return BeautifulSoup(r.content, 'lxml')
-
-    def _validate(self):
-        self.validate_server()
-        self.validate_player()
-        self.valiidate_page()
+        super().__init__(player, server)
 
     def parse(self):
         data = {}
@@ -218,19 +198,6 @@ class ProfilePage:
                 values.append(value.get_text())
 
         return values
-
-    def validate_server(self):
-        if self.server.lower() not in self.servers:
-            raise Exception('{} | Invalid server'.format(str(self)))
-
-    def validate_player(self):
-        error_span = self.soup.find('span', class_='colorRed')
-        if error_span is not None:
-            raise Exception('{} | Profile not found'.format(str(self)))
-
-    def valiidate_page(self):
-        if self.soup.find(text='Error Encountered'):
-            raise Exception('{} | Invalid request'.format(str(self)))
 
     def request_solo(self):
         data = self.individual.get('solo')

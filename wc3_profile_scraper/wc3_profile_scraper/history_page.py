@@ -1,52 +1,17 @@
-import requests
-from bs4 import BeautifulSoup
+"""Scrapes a WC3 game history page from battlenet and returns json."""
 from helpers import wash_player_name
 from config import data_positions_history
 from urllib.parse import parse_qs
 import pandas as pd
 import json
+from bnet_page import BnetPage
 
-class HistoryPage:
-    def __init__(self, player, server, page=1):
-        self.player = player
-        self.server = server.title()
-        self.page = page
-        self.params = {'PlayerName': self.player, 'Gateway': self.server, 'PageNo': page}
+
+class HistoryPage(BnetPage):
+    def __init__(self, player, server, page=1):  
         self.url = 'http://classic.battle.net/war3/ladder/w3xp-player-logged-games.aspx'
-        self.servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
-        self.soup = self.get_soup()
-        self._validate()
-
-    def __str__(self):
-        return '{}@{}'.format(self.player, self.server)
-
-    def __repr__(self):
-        return '{}@{}'.format(self.player, self.server)
-
-    def _validate(self):
-        self.validate_server()
-        self.validate_player()
-        self.validate_page()
-
-    def validate_player(self):
-        error_span = self.soup.find('span', class_='colorRed')
-        if error_span is not None:
-            raise Exception('{} | Profile not found'.format(str(self)))
-
-    def validate_server(self):
-        if self.server.lower() not in self.servers:
-            raise Exception('{} | Invalid server'.format(str(self)))
-
-    def validate_page(self):
-        if self.soup.find(text='Error Encountered'):
-            raise Exception('{} | Invalid request'.format(str(self)))
-
-    def get_soup(self):
-        try:
-            r = requests.get(self.url, params=self.params, timeout=5)
-        except:
-            raise
-        return BeautifulSoup(r.content, 'lxml')
+        self.page = page
+        super().__init__(player, server)
 
     @property
     def game_containers(self):
@@ -103,10 +68,7 @@ class Game:
 
 if __name__ == '__main__':
     players = [
-        {
-            'player': 'Rellik',
-            'server': 'northrend'
-        }
+        {'player': 'Rellik', 'server': 'northrend'}
     ]
 
     print('-- Testing --')
