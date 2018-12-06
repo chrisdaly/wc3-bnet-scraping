@@ -49,6 +49,7 @@ class HistoryPage:
     def game_containers(self):
         return self.soup.find('table', id='tblGames').find_all('tr', class_='rankingRow')[1:]
 
+    @property
     def games(self):
         for game in self.game_containers:
             yield Game(self.player, game).parse()
@@ -100,7 +101,7 @@ class Game:
 if __name__ == '__main__':
     players = [
         {
-            'player': 'followgrubby',
+            'player': 'Rellik',
             'server': 'northrend'
         }
     ]

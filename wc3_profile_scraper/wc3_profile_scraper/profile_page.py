@@ -6,7 +6,7 @@ import pandas as pd
 from config import data_positions_profile
 
 
-class Profile:
+class ProfilePage:
     def __init__(self, player, server):
         self.player = player
         self.server = server.title()
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     for player in players:
         print()
         try:
-            profile = Profile(**player)
+            profile = ProfilePage(**player)
             print(profile)
             print(profile.parse())
         except Exception as e:
