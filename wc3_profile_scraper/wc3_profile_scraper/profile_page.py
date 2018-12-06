@@ -22,15 +22,15 @@ class ProfilePage:
 
     def get_soup(self):
         try:
-            r = requests.get(self.url, params=self.params)
-        except requests.exceptions.RequestException as e:
-            print(e)
-
+            r = requests.get(self.url, params=self.params, timeout=5)
+        except:
+            raise
         return BeautifulSoup(r.content, 'lxml')
 
     def _validate(self):
         self.validate_server()
         self.validate_player()
+        self.valiidate_page()
 
     def parse(self):
         data = {}
@@ -227,6 +227,10 @@ class ProfilePage:
         error_span = self.soup.find('span', class_='colorRed')
         if error_span is not None:
             raise Exception('{} | Profile not found'.format(str(self)))
+
+    def valiidate_page(self):
+        if self.soup.find(text='Error Encountered'):
+            raise Exception('{} | Invalid request'.format(str(self)))
 
     def request_solo(self):
         data = self.individual.get('solo')

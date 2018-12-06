@@ -6,7 +6,6 @@ from urllib.parse import parse_qs
 import pandas as pd
 import json
 
-
 class HistoryPage:
     def __init__(self, player, server, page=1):
         self.player = player
@@ -27,6 +26,7 @@ class HistoryPage:
     def _validate(self):
         self.validate_server()
         self.validate_player()
+        self.validate_page()
 
     def validate_player(self):
         error_span = self.soup.find('span', class_='colorRed')
@@ -37,17 +37,20 @@ class HistoryPage:
         if self.server.lower() not in self.servers:
             raise Exception('{} | Invalid server'.format(str(self)))
 
+    def validate_page(self):
+        if self.soup.find(text='Error Encountered'):
+            raise Exception('{} | Invalid request'.format(str(self)))
+
     def get_soup(self):
         try:
-            r = requests.get(self.url, params=self.params)
-        except requests.exceptions.RequestException as e:
-            print(e)
-
+            r = requests.get(self.url, params=self.params, timeout=5)
+        except:
+            raise
         return BeautifulSoup(r.content, 'lxml')
 
     @property
     def game_containers(self):
-        return self.soup.find('table', id='tblGames').find_all('tr', class_='rankingRow')[1:]
+        return self.soup.find('table', id='tblGames').find_all('tr', class_='rankingRow')
 
     @property
     def games(self):
@@ -113,7 +116,8 @@ if __name__ == '__main__':
 
         while True:
                 history_page = HistoryPage(player.get('player'), player.get('server'), page)
-                data = list(history_page.games())
+                print(history_page)
+                data = list(history_page.games)
                 data_all.extend(data)
                 next_page = history_page.next_page
                 if page >= next_page:
