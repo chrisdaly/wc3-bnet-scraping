@@ -9,9 +9,11 @@ from bnet_page import BnetPage
 
 class HistoryPage(BnetPage):
     def __init__(self, player, server, page=1):  
-        self.url = 'http://classic.battle.net/war3/ladder/w3xp-player-logged-games.aspx'
+        url = 'http://classic.battle.net/war3/ladder/w3xp-player-logged-games.aspx'
+        params = {'PlayerName': player, 'PageNo': page, 'Gateway': server}
+        super().__init__(server, url, params)
+        self.player = player
         self.page = page
-        super().__init__(player, server)
 
     @property
     def game_containers(self):
@@ -68,7 +70,78 @@ class Game:
 
 if __name__ == '__main__':
     players = [
-        {'player': 'Rellik', 'server': 'northrend'}
+        {
+            'player': 'romantichuman',
+            'server': 'northrend'
+        },
+        {
+            'player': 'followgrubby',
+            'server': 'northrend'
+        },
+        {
+            'player': 'nightend',
+            'server': 'northrend'
+        },
+        {
+            'player': 'tanymommy',
+            'server': 'northrend'
+        },
+        {
+            'player': 'ilovenecropolis',
+            'server': 'northrend'
+        },
+        {
+            'player': 'alanford',
+            'server': 'northrend'
+        },
+        {
+            'player': '123456789012345',
+            'server': 'northrend'
+        },
+        {
+            'player': 'ZveroBoy',
+            'server': 'northrend'
+        },
+              {
+            'player': 'Feanor',
+            'server': 'northrend'
+        },
+                {
+            'player': 'SyDe',
+            'server': 'northrend'
+        },
+                {
+            'player': 'Nicker59',
+            'server': 'northrend'
+        },
+                {
+            'player': 'rg-back2game',
+            'server': 'northrend'
+        },
+                {
+            'player': 'ukto',
+            'server': 'northrend'
+        },
+                {
+            'player': 'pieck',
+            'server': 'northrend'
+        },
+        {
+            'player': 'IamTry',
+            'server': 'northrend'
+        },
+        {
+            'player': 'MisterWinner',
+            'server': 'northrend'
+        },
+        {
+            'player': 'Pieck',
+            'server': 'azeroth'
+        },
+        {
+            'player': 'Cocaine.',
+            'server': 'azeroth'
+        },
     ]
 
     print('-- Testing --')
@@ -92,5 +165,5 @@ if __name__ == '__main__':
 
     data = df.to_dict(orient='records')
     print(data)
-    with open('./data_backfill/{}.json'.format(player.get('player')), 'w') as f:
+    with open('./data_backfill/{}/{}.json'.format(player.get('server'), player.get('player')), 'w') as f:
         json.dump(data, f)

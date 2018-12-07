@@ -7,10 +7,11 @@ from bnet_page import BnetPage
 
 class ProfilePage(BnetPage):
     def __init__(self, player, server):
-        self.url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx?'
-        print(self.url)
+        url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx'
+        params = {'PlayerName': player, 'Gateway': server}
+        super().__init__(server, url, params)
+        self.player = player
         self.tables = self._parse_tables()
-        super().__init__(player, server)
 
     def parse(self):
         data = {}
@@ -261,8 +262,8 @@ if __name__ == '__main__':
     ]
     print('-- Testing --')
     for player in players:
-        print()
         try:
+            print(player)
             profile = ProfilePage(**player)
             print(profile)
             print(profile.parse())

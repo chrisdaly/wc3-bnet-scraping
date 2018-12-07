@@ -3,17 +3,17 @@ from bs4 import BeautifulSoup
 
 
 class BnetPage:
-    def __init__(self, player, server):
-        self.player = player
+    def __init__(self, server, url, params):
         self.server = server.title()
-        self.params = {'PlayerName': self.player, 'Gateway': self.server}
+        self.url = url
         self.servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
         self.timeout = 5
+        self.params = params
         self.soup = self.get_soup()
         self._validate()
 
     def __str__(self):
-        return '{}@{}'.format(self.player, self.server)
+        return '{}@{}'.format(self.params.get('player'), self.server)
 
     def __repr__(self):
         return '{}@{}'.format(self.player, self.server)
@@ -24,9 +24,9 @@ class BnetPage:
         self.validate_page()
 
     def validate_player(self):
-            error_span = self.soup.find('span', class_='colorRed')
-            if error_span is not None:
-                    raise Exception('{} | Profile not found'.format(str(self)))
+        error_span = self.soup.find('span', class_='colorRed')
+        if error_span is not None:
+            raise Exception('{} | Profile not found'.format(str(self)))
 
     def validate_server(self):
         if self.server.lower() not in self.servers:
@@ -39,7 +39,7 @@ class BnetPage:
     def get_soup(self):
         try:
             r = requests.get(self.url, params=self.params, timeout=self.timeout)
-            print(r.status_code)
+            # print(list(r.history)[0].url)
         except:
             raise
         return BeautifulSoup(r.content, 'lxml')
