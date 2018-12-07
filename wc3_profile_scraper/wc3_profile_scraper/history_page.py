@@ -102,27 +102,27 @@ if __name__ == '__main__':
             'player': 'ZveroBoy',
             'server': 'northrend'
         },
-              {
+        {
             'player': 'Feanor',
             'server': 'northrend'
         },
-                {
+        {
             'player': 'SyDe',
             'server': 'northrend'
         },
-                {
+        {
             'player': 'Nicker59',
             'server': 'northrend'
         },
-                {
+        {
             'player': 'rg-back2game',
             'server': 'northrend'
         },
-                {
+        {
             'player': 'ukto',
             'server': 'northrend'
         },
-                {
+        {
             'player': 'pieck',
             'server': 'northrend'
         },
@@ -155,7 +155,7 @@ if __name__ == '__main__':
                 data = list(history_page.games)
                 data_all.extend(data)
                 next_page = history_page.next_page
-                if page >= next_page:
+                if (next_page > 10) or (page >= next_page):
                         break
                 page = next_page
 

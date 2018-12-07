@@ -13,10 +13,10 @@ class BnetPage:
         self._validate()
 
     def __str__(self):
-        return '{}@{}'.format(self.params.get('player'), self.server)
+        return '{}@{}'.format(self.params.get('PlayerName'), self.server)
 
     def __repr__(self):
-        return '{}@{}'.format(self.player, self.server)
+        return '{}@{}'.format(self.params.get('PlayerName'), self.server)
 
     def _validate(self):
         self.validate_server()
@@ -39,7 +39,6 @@ class BnetPage:
     def get_soup(self):
         try:
             r = requests.get(self.url, params=self.params, timeout=self.timeout)
-            # print(list(r.history)[0].url)
         except:
             raise
         return BeautifulSoup(r.content, 'lxml')
@@ -51,8 +50,9 @@ if __name__ == '__main__':
             'server': 'northrend'
         }
     ]
-
+    url = 'http://classic.battle.net/war3/ladder/w3xp-player-profile.aspx'
     print('-- Testing --')
     for player in players:
-        page = BnetPage(player.get('player'), player.get('server'))
+        params = {'PlayerName': player.get('player'), 'Gateway': player.get('server')}
+        page = BnetPage(player.get('server'), url, params)
         print(page)
