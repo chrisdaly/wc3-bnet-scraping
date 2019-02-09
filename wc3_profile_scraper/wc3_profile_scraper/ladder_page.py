@@ -9,6 +9,12 @@ class LadderPage(BnetPage):
         params = {'Gateway': server, 'PageNo': page}
         super().__init__(server, url, params)
 
+    def __str__(self):
+        return '@{}'.format(self.server)
+
+    def __repr__(self):
+        return '@{}'.format(self.server)
+
     @property
     def rows_soup(self):
         return self.soup.find('table', id='LeaderBoard').find_all('tr', class_='rankingRow')
@@ -33,9 +39,11 @@ class Row:
         }
         return data
 
+
 if __name__ == '__main__':
     server = 'northrend'
 
     print('-- Testing --')
     ladder_page = LadderPage('northrend')
+    print(ladder_page)
     print(list(ladder_page.rows))

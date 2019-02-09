@@ -1,7 +1,7 @@
 import os
 import json
 from google.cloud import bigquery
-from history import HistoryPage
+from history_page import HistoryPage
 
 
 def get_new_games(player, server, last_bq_date=None):
@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     dataset_id = 'wc3'
     dataset_ref = client.dataset(dataset_id)
     table_name = players.get('server')
-	table_ref = dataset_ref.table(table_name)
+    table_ref = dataset_ref.table(table_name)
 
     history_page = HistoryPage(data_input.get('player_one'), data_input.get('server'))
     data = list(history_page.games())

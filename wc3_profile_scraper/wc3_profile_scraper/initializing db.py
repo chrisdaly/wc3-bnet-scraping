@@ -88,13 +88,16 @@ def update_table(dataset_id, table_name, new_games):
         print(Exception, errors[0])
     print('Uploaded {} new games'.format(len(new_games)))
 
-bigquery_credpath = os.path.abspath('/Users/cdaly/Box Sync/Daly, Christopher/Keys/BigQuery Reader Project-88493810ca62.json')
-client = bigquery.Client.from_service_account_json(bigquery_credpath)
-job_config = bigquery.LoadJobConfig()
-job_config.skip_leading_rows = 1
-job_config.autodetect = True
-dataset_id = 'wc3'
 
-with open('./table_config.json', 'r') as f:
-    configuration = json.loads(f.read())
-database_setup(configuration, client, dataset_id)
+if __name__ == '__main__':
+    bigquery_credpath = os.path.abspath(
+        '/Users/cdaly/Box Sync/Daly, Christopher/Keys/BigQuery Reader Project-88493810ca62.json')
+    client = bigquery.Client.from_service_account_json(bigquery_credpath)
+    job_config = bigquery.LoadJobConfig()
+    job_config.skip_leading_rows = 1
+    job_config.autodetect = True
+    dataset_id = 'wc3'
+
+    with open('./table_config.json', 'r') as f:
+        configuration = json.loads(f.read())
+    database_setup(configuration, client, dataset_id)

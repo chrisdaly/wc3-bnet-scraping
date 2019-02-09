@@ -7,7 +7,7 @@ class BnetPage:
         self.server = server.title()
         self.url = url
         self.servers = ['azeroth', 'lordaeron', 'northrend', 'kalimdor']
-        self.timeout = 5
+        self.timeout = 10
         self.params = params
         self.soup = self.get_soup()
         self._validate()

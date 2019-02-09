@@ -5,10 +5,11 @@ from urllib.parse import parse_qs
 import pandas as pd
 import json
 from bnet_page import BnetPage
+from profile_page import ProfilePage
 
 
 class HistoryPage(BnetPage):
-    def __init__(self, player, server, page=1):  
+    def __init__(self, player, server, page=1):
         url = 'http://classic.battle.net/war3/ladder/w3xp-player-logged-games.aspx'
         params = {'PlayerName': player, 'PageNo': page, 'Gateway': server}
         super().__init__(server, url, params)
@@ -50,6 +51,8 @@ class Game:
 
         if data['winner'] == 'Win':
             data['winner'] = data['team_one']
+        elif data['winner'] == 'Tie':
+            data['winner'] = None
         else:
             data['winner'] = data['team_two']
 
@@ -68,102 +71,117 @@ class Game:
 
         return data
 
+
 if __name__ == '__main__':
+    print('-- Testing --')
     players = [
         {
-            'player': 'romantichuman',
-            'server': 'northrend'
-        },
-        {
-            'player': 'followgrubby',
-            'server': 'northrend'
-        },
-        {
-            'player': 'nightend',
-            'server': 'northrend'
-        },
-        {
-            'player': 'tanymommy',
-            'server': 'northrend'
-        },
-        {
-            'player': 'ilovenecropolis',
-            'server': 'northrend'
-        },
-        {
-            'player': 'alanford',
-            'server': 'northrend'
-        },
-        {
-            'player': '123456789012345',
-            'server': 'northrend'
-        },
-        {
-            'player': 'ZveroBoy',
-            'server': 'northrend'
-        },
-        {
-            'player': 'Feanor',
-            'server': 'northrend'
-        },
-        {
-            'player': 'SyDe',
-            'server': 'northrend'
-        },
-        {
-            'player': 'Nicker59',
-            'server': 'northrend'
-        },
-        {
-            'player': 'rg-back2game',
-            'server': 'northrend'
-        },
-        {
-            'player': 'ukto',
-            'server': 'northrend'
-        },
-        {
-            'player': 'pieck',
-            'server': 'northrend'
-        },
-        {
-            'player': 'IamTry',
-            'server': 'northrend'
-        },
-        {
-            'player': 'MisterWinner',
-            'server': 'northrend'
-        },
-        {
-            'player': 'Pieck',
+            'player': 'Fithydenk',
             'server': 'azeroth'
-        },
-        {
-            'player': 'Cocaine.',
-            'server': 'azeroth'
-        },
+        }
+        # {
+        #     'player': 'romantichuman',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'followgrubby',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'nightend',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'tanymommy',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'ilovenecropolis',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'alanford',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': '123456789012345',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'ZveroBoy',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'Feanor',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'SyDe',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'Nicker59',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'rg-back2game',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'ukto',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'pieck',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'IamTry',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'MisterWinner',
+        #     'server': 'northrend'
+        # },
+        # {
+        #     'player': 'Pieck',
+        #     'server': 'azeroth'
+        # },
+        # {
+        #     'player': 'Cocaine.',
+        #     'server': 'azeroth'
+        # },
+        # {
+        #     'player': 'ALANFORD',
+        #     'server': 'Northrend'
+        # },
     ]
 
-    print('-- Testing --')
     for player in players:
         page = 1
-        data_all = []
+        games_all = []
 
+        profile = ProfilePage(**player)
+        print("\n{}".format(profile))
         while True:
-                history_page = HistoryPage(player.get('player'), player.get('server'), page)
-                print(history_page)
-                data = list(history_page.games)
-                data_all.extend(data)
-                next_page = history_page.next_page
-                if (next_page > 10) or (page >= next_page):
-                        break
-                page = next_page
 
-        df = pd.DataFrame(data_all)
-        print(df.shape)
-        print(df.head(3))
+            history_page = HistoryPage(player.get('player'), player.get('server'), page)
+            games = list(history_page.games)
+            games_all.extend(games)
+            next_page = history_page.next_page
+            if (next_page > 10) or (page >= next_page):
+                break
+            page = next_page
 
-    data = df.to_dict(orient='records')
-    print(data)
-    with open('./data_backfill/{}/{}.json'.format(player.get('server'), player.get('player')), 'w') as f:
-        json.dump(data, f)
+        df = pd.DataFrame(games_all)
+        print("Number of games found: {}".format(len(df)))
+        print("Most recent game: {}".format(df.loc[0, "date"]))
+
+        data = df.to_dict(orient='records')
+        for d in data:
+            print(d)
+        file_path = './data_backfill/partial/{}/{}.json'.format(
+            player.get('server'), player.get('player'))
+
+        with open(file_path, 'w') as f:
+            json.dump(data, f)
